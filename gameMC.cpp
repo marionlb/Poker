@@ -11,6 +11,17 @@ Game::Game(MainWindow *mmWindow)
 {
     mWindow = mmWindow;
 
+//    nbThreads = QThread::idealThreadCount();
+
+//    Worker* workers[nbThreads];
+//    QThread* threads[nbThreads];
+//    for(int k=0; k<nbThreads; k++) {
+//        workers[k]=new Worker(this);
+//        threads[k]=new QThread();
+//        workers[k]->moveToThread(threads[k]);
+//        connect(this, SIGNAL(doWork()), workers[k], SLOT(work()));
+//    }
+
     worker1 = new Worker(this);
     worker2 = new Worker(this);
 
@@ -133,6 +144,6 @@ void Game::upProgress()
 {
     cnt = worker1->cnt + worker2->cnt;
     nbBetter = worker1->nBetter + worker2->nBetter;
-    //qDebug() << "\n nb de games:" << cnt << " games/s: " << (float) cnt / ((float) QDateTime::currentDateTime().msecsTo(debDate) / (-1000)) << " Result: " << (1 - (float) nbBetter / cnt) * 100;
+    qDebug() << "\n nb de games:" << cnt << " games/s: " << (float) cnt / ((float) QDateTime::currentDateTime().msecsTo(debDate) / (-1000)) << " Result: " << (1 - (float) nbBetter / cnt) * 100;
     mWindow->setRes((float) nbBetter / cnt);
 }

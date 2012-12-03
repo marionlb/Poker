@@ -42,6 +42,7 @@ public:
     QThread*        th2;
     QThread*        thManager;
     int             n;
+    int             nbThreads;
 
 signals:
     void doWork();
