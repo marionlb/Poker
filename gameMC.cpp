@@ -11,7 +11,6 @@ Game::Game(MainWindow *mmWindow)
 {
     mWindow = mmWindow;
 
-
     nbThreads = QThread::idealThreadCount();
 
     workers = new Worker*[nbThreads];
@@ -23,20 +22,6 @@ Game::Game(MainWindow *mmWindow)
         connect(this, SIGNAL(doWork()), workers[k], SLOT(work()));
     }
 
-
-    /*
-    worker1 = new Worker(this);
-    worker2 = new Worker(this);
-
-    th1 = new QThread();
-    th2 = new QThread();
-
-    worker1->moveToThread(th1);
-    worker2->moveToThread(th2);
-
-    connect(this, SIGNAL(doWork()), worker1, SLOT(work()));
-    connect(this, SIGNAL(doWork()), worker2, SLOT(work()));
-    */
 
     connect(mWindow, SIGNAL(Refresh()), this, SLOT(refresh()));
 }
