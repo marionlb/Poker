@@ -34,14 +34,17 @@ public:
     MainWindow*     mWindow;
     int             nbBetter;
     int             cnt;
-    Worker*         worker1;
-    Worker*         worker2;
+    Worker**         workers;
+    QThread**        threads;
+    // Worker*         worker1;
+    // Worker*         worker2;
     Manager*        manager;
     QDateTime       debDate;
-    QThread*        th1;
-    QThread*        th2;
-    QThread*        thManager;
-    int             n;
+    //QThread*        th1;
+    //QThread*        th2;
+    //QThread*        thManager;
+    //int             n;
+    int             nbThreads;
 
 signals:
     void doWork();

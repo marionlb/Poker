@@ -11,6 +11,20 @@ Game::Game(MainWindow *mmWindow)
 {
     mWindow = mmWindow;
 
+
+    nbThreads = QThread::idealThreadCount();
+
+    workers = new Worker*[nbThreads];
+    threads = new QThread*[nbThreads];
+    for(int k=0; k<nbThreads; k++) {
+        workers[k]=new Worker(this);
+        threads[k]=new QThread();
+        workers[k]->moveToThread(threads[k]);
+        connect(this, SIGNAL(doWork()), workers[k], SLOT(work()));
+    }
+
+
+    /*
     worker1 = new Worker(this);
     worker2 = new Worker(this);
 
@@ -22,6 +36,7 @@ Game::Game(MainWindow *mmWindow)
 
     connect(this, SIGNAL(doWork()), worker1, SLOT(work()));
     connect(this, SIGNAL(doWork()), worker2, SLOT(work()));
+    */
 
     connect(mWindow, SIGNAL(Refresh()), this, SLOT(refresh()));
 }
@@ -84,11 +99,15 @@ float Game::recursAll(QList<int> deck, int nbCard, QList<int> play)
 {
     debDate = QDateTime::currentDateTime();
 
-    th1->start();
-    th2->start();
+    for(int k=0; k<nbThreads; k++) {
+        threads[k]->start();
+        workers[k]->setWorker(deck, nbCard, play);
+    }
+    //th1->start();
+    //th2->start();
 
-    worker1->setWorker(deck, nbCard, play);
-    worker2->setWorker(deck, nbCard, play);
+    //worker1->setWorker(deck, nbCard, play);
+    //worker2->setWorker(deck, nbCard, play);
 
     emit doWork();
 
@@ -97,21 +116,33 @@ float Game::recursAll(QList<int> deck, int nbCard, QList<int> play)
     float oldRes = 0;
     while(count < 50)
     {
-        th1->wait(100);
+
+        //th1->wait(100);
+        threads[0]->wait(100);
         count++;
-        cnt = worker1->cnt + worker2->cnt;
-        nbBetter = worker1->nBetter + worker2->nBetter;
+        cnt=0;
+        nbBetter=0;
+        for(int k=0; k<nbThreads; k++) {
+            cnt+=workers[k]->cnt;
+            nbBetter+=workers[k]->nBetter;
+        }
+        //cnt = worker1->cnt + worker2->cnt;
+        //nbBetter = worker1->nBetter + worker2->nBetter;
         tmpRes = (float) nbBetter / cnt;
         if (cnt > 100000 && !(tmpRes - oldRes > 0.00001 || tmpRes - oldRes < -0.00001))
             break;
         oldRes = tmpRes;
     }
 
-    worker1->m_isInterrupted = true;
-    worker2->m_isInterrupted = true;
+    for(int k=0; k<nbThreads; k++) {
+        workers[k]->m_isInterrupted=true;
+        threads[k]->terminate();
+    }
+    //worker1->m_isInterrupted = true;
+    //worker2->m_isInterrupted = true;
 
-    th1->terminate();
-    th2->terminate();
+    //th1->terminate();
+    //th2->terminate();
 
     upProgress();
 }
@@ -131,8 +162,14 @@ QList< QList<int> > Game::add(QList< QList<int> > l1, QList< QList<int> > l2)
 
 void Game::upProgress()
 {
-    cnt = worker1->cnt + worker2->cnt;
-    nbBetter = worker1->nBetter + worker2->nBetter;
-    //qDebug() << "\n nb de games:" << cnt << " games/s: " << (float) cnt / ((float) QDateTime::currentDateTime().msecsTo(debDate) / (-1000)) << " Result: " << (1 - (float) nbBetter / cnt) * 100;
+    cnt=0;
+    nbBetter=0;
+    for(int k=0; k<nbThreads; k++) {
+        cnt+=workers[k]->cnt;
+        nbBetter+=workers[k]->nBetter;
+    }
+    //cnt = worker1->cnt + worker2->cnt;
+    //nbBetter = worker1->nBetter + worker2->nBetter;
+    qDebug() << "\n nb de games:" << cnt << " games/s: " << (float) cnt / ((float) QDateTime::currentDateTime().msecsTo(debDate) / (-1000)) << " Result: " << (1 - (float) nbBetter / cnt) * 100;
     mWindow->setRes((float) nbBetter / cnt);
 }
