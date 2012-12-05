@@ -8,8 +8,6 @@
 #include <QTime>
 
 #include "card.h"
-#include "pocketcards.h"
-#include "communitycards.h"
 #include "mainwindow.h"
 #include "worker.h"
 

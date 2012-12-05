@@ -8,11 +8,12 @@ Worker::Worker(Game *g)
     listing = new QList<int> ();
 }
 
-void Worker::setWorker(QList<int> deck, int nbCard, QList<int> play)
+void Worker::setWorker(QList<int> deck, int nbCard, QList<int> play, int nbPlayer)
 {
     this->deck = deck;
     this->nbCard = nbCard;
     this->play = play;
+    this->nbPlayer = nbPlayer;
 
     cnt = 0;
     nBetter = 0;
@@ -22,6 +23,11 @@ void Worker::work()
 {
     m_isInterrupted = false;
     qsrand(QDateTime::currentDateTime().toTime_t ());
+
+    QList<int> list;
+    list.clear();
+    list.append(play[0]);
+    list.append(play[1]);
 
     while (!m_isInterrupted)
     {
@@ -34,7 +40,10 @@ void Worker::work()
         nComp = result(play, comp, 0);
         if (nComp % 1000 == 1)
             nComp += 13;
-        comp = play;
+
+        comp.clear();
+        for (int i = 0; i < play.size(); ++i)
+            comp.append(play[i]);
 
         play[0] = deck[qrand() % deck.length()];
         deck.removeOne(play[0]);
@@ -42,19 +51,45 @@ void Worker::work()
         play[1] = deck[qrand() % deck.length()];
         deck.removeOne(play[1]);
 
-        if (result(play, comp, nComp) != 0)
+        list.append(play[0]);
+        list.append(play[1]);
+
+        int nbP = 0;
+        int res = 0;
+
+        while (nbP != nbPlayer && (res = result(play, comp, nComp)) == 0)
+        {
+            play[0] = deck[qrand() % deck.length()];
+            deck.removeOne(play[0]);
+
+            play[1] = deck[qrand() % deck.length()];
+            deck.removeOne(play[1]);
+
+            list.append(play[0]);
+            list.append(play[1]);
+
+            nbP++;
+        }
+
+        if (res != 0)
             nBetter++;
 
-        deck.append(play[0]);
-        deck.append(play[1]);
+        for (QList<int>::iterator it = list.begin(); it < list.end(); ++it)
+        {
+            if (*it != list[0] && *it != list[1])
+            {
+                deck.append(*it);
+                list.removeOne(*it);
+            }
+        }
 
         for (int i = 7 - nbCard; i < 7; ++i)
         {
             deck.append(play[i]);
         }
 
-        play = comp;
-
+        play[0] = list[0];
+        play[1] = list[1];
         cnt++;
     }
 }
@@ -71,7 +106,7 @@ int Worker::result(QList<int> list, QList<int> comp, int nComp)
     listing->clear();
     for (int i = 0; i < 14; ++i)
         listing->append(0);
-    int res;
+    int res = 0;
     for(QList<int>::iterator it = list.begin(); it != list.end(); ++it)
     {
         if (*it / 100 == 3)
@@ -246,6 +281,8 @@ int Worker::result(QList<int> list, QList<int> comp, int nComp)
         else
             return 0;
     }
+
+    return res;
 }
 
 // Teste la quinte flush

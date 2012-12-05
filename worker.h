@@ -11,7 +11,7 @@ class Worker : public QObject
     Q_OBJECT
 public:
     Worker(Game *g);
-    void setWorker(QList<int> deck, int nbCard, QList<int> play);
+    void setWorker(QList<int> deck, int nbCard, QList<int> play, int nbPlayer);
 
     int result(QList<int> list, QList<int> comp, int res);
 
@@ -39,6 +39,8 @@ public:
     QList<int> deck;
     QList<int> play;
     QList<int> comp;
+
+    int nbPlayer;
     int nComp;
     int nBetter;
     int n;
