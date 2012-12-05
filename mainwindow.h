@@ -10,11 +10,11 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    
+
     void setResult(float res, int nbPlayers = 0);
 
 public slots:
