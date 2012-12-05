@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QTime>
 
-#include "card.h"
 #include "mainwindow.h"
 #include "worker.h"
 

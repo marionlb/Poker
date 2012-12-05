@@ -1,5 +1,4 @@
 #include "game.h"
-#include "worker.h"
 
 // Constructeur par défaut
 Game::Game()

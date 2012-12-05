@@ -2,7 +2,6 @@
 #define MYTHREAD_H
 
 #include <QThread>
-#include "manager.h"
 
 class Game;
 
