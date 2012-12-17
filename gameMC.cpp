@@ -31,7 +31,7 @@ Game::~Game()
 }
 
 // Renvoie true si la carte c appartient à la liste de cartes list
-static bool cont(QList<Card> *list, Card c)
+/**static bool cont(QList<Card> *list, Card c)
 {
     for (int i = 0; i < list->size(); ++i)
     {
@@ -40,7 +40,7 @@ static bool cont(QList<Card> *list, Card c)
     }
 
     return false;
-}
+}*/
 
 // Teste un jeu donné via l'interface
 void Game::refresh()

@@ -33,14 +33,8 @@ public:
     int             cnt;
     Worker**         workers;
     QThread**        threads;
-    // Worker*         worker1;
-    // Worker*         worker2;
-    Manager*        manager;
+
     QDateTime       debDate;
-    //QThread*        th1;
-    //QThread*        th2;
-    //QThread*        thManager;
-    //int             n;
     int             nbThreads;
 
 signals:

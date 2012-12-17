@@ -47,7 +47,6 @@ public:
     int cnt;
     Game *g;
     QString name;
-    Manager *manager;
 
     QList<int>      *listing;
 
